@@ -1,0 +1,99 @@
+train_dataset:
+  dataset:
+    name: paired-image-folders
+    args:
+      classes: ['BA', 'CR', 'AR', 'PH', 'SC', 'MS', 'CL', 'VCR', 'GR', 'SL', 'GL', 'SW', 'SO'] # #0 - 12
+      ignore_bg: false
+      palette:
+      root_path_1: ./wdatas/wlk-256data/train/images
+      root_path_2: ./wdatas/wlk-256data/train/labels
+      cache: none #表示不把数据预载入内存，每次 iteration 从磁盘读取。
+      split_key: train #一般用于统一的数据描述文件（比如一个 json/列表里同时维护 train/val/test），然后在这里指定只取
+  wrapper:
+    name: train
+    args:
+      inp_size: 256
+      augment: True
+  batch_size: 1
+
+val_dataset:
+  dataset:
+    name: paired-image-folders
+    args:
+      classes: ['BA', 'CR', 'AR', 'PH', 'SC', 'MS', 'CL', 'VCR', 'GR', 'SL', 'GL', 'SW', 'SO'] #0 - 12
+      ignore_bg: false
+      palette:
+      root_path_1: ./wdatas/wlk-256data/val/images
+      root_path_2: ./wdatas/wlk-256data/val/labels
+      cache: none
+      split_key: test
+  wrapper:
+    name: val
+    args:
+      inp_size: 256
+  batch_size: 1
+
+eval_type: seg
+sam_checkpoint: ./pretrained/sam_vit_b_01ec64.pth
+data_norm: #从[0,1]->[-1,1]
+  inp:
+    sub:
+    - 0.5
+    div:
+    - 0.5
+  gt:
+    sub:
+    - 0.5
+    div:
+    - 0.5
+  gt_rgb:
+    sub:
+    - 0.5
+    div:
+    - 0.5
+model:
+  name: sam
+  args:
+    num_classes: 13
+    inp_size: 256
+    loss: iou
+    loss_weight :
+    encoder_mode:
+      name: sam
+      img_size: 256
+      mlp_ratio: 4
+      patch_size: 16
+      qkv_bias: true
+      use_rel_pos: true
+      window_size: 14
+      out_chans: 256
+      scale_factor: 32
+      input_type: fft
+      freq_nums: 0.25
+      prompt_type: highpass
+      prompt_embed_dim: 256
+      tuning_stage: 1234
+      handcrafted_tune: true
+      embedding_tune: true
+      adaptor: adaptor
+      embed_dim: 768
+      depth: 12
+      num_heads: 12
+      global_attn_indexes:
+      - 2
+      - 5
+      - 8
+      - 11
+optimizer:
+  name: adamw
+  args:
+    lr: 0.0002
+lr_min: 1.0e-7
+epoch_max: 120
+multi_step_lr:
+  milestones:
+  - 1
+  gamma: 0.1
+epoch_val: 1
+epoch_save: 1
+
