@@ -12,7 +12,7 @@ GeoSeg_SAM/
 ├── datasets/
 ├── models/
 ├── requirements.txt
-├── train_singlew_loadfrom.py
+├── train.py
 ├── pretrained/                  # create this directory for the SAM checkpoint
 │   └── sam_vit_b_01ec64.pth
 ├── wdatas/                      # create this directory for the datasets
@@ -99,7 +99,7 @@ The provided configurations use 256 × 256 inputs. The WLK configuration contain
 ### Train on the WLK dataset
 
 ```bash
-python train_singlew_loadfrom.py \
+python train.py \
   --config configs/wlk-256input.yaml \
   --path ./outputs \
   --name geoseg_wlk
